@@ -15,7 +15,7 @@ from ps3_verify_movement27 import test_robot_movement
 
 
 # === Provided class Position
-class Position(object):
+class Position:
     """
     A Position represents a location in a two-dimensional room, where
     coordinates are given by floats (x, y).
@@ -81,7 +81,12 @@ class RectangularRoom(object):
         height: an integer > 0
         dirt_amount: an integer >= 0
         """
-        raise NotImplementedError
+        self.width = width
+        self.height = height
+        self.tiles = {}
+        for x in range(self.width):
+            for y in range(self.height):
+                self.tiles[(x, y)] = dirt_amount
     
     def clean_tile_at_position(self, pos, capacity):
         """
@@ -96,7 +101,11 @@ class RectangularRoom(object):
         Note: The amount of dirt on each tile should be NON-NEGATIVE.
               If the capacity exceeds the amount of dirt on the tile, mark it as 0.
         """
-        raise NotImplementedError
+        x = math.floor(pos.get_x())
+        y = math.floor(pos.get_y())
+        self.tiles[(x, y)] -= capacity
+        if self.tiles[(x, y)] < 0:
+            self.tiles[(x, y)] = 0
 
     def is_tile_cleaned(self, m, n):
         """

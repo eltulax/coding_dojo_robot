@@ -239,7 +239,7 @@ class Robot(object):
 
         direction: float representing an angle in degrees
         """
-        raise NotImplementedError
+        self.direction = direction
 
     def update_position_and_clean(self):
         """
@@ -269,8 +269,8 @@ class EmptyRoom(RectangularRoom):
         
         Returns: True if pos is in the room, False otherwise.
         """
-        x = pos.get_x()
-        y = pos.get_y()
+        x = math.floor(pos.get_x())
+        y = math.floor(pos.get_y())
         return (x, y) in self.tiles
             
     def get_random_position(self):
@@ -327,7 +327,9 @@ class FurnishedRoom(RectangularRoom):
         """
         Return True if tile (m, n) is furnished.
         """
-        raise NotImplementedError
+        x = math.floor(m)
+        y = math.floor(n)
+        return (x, y) in self.furniture_tiles
         
     def is_position_furnished(self, pos):
         """
@@ -335,7 +337,7 @@ class FurnishedRoom(RectangularRoom):
 
         Returns True if pos is furnished and False otherwise
         """
-        raise NotImplementedError
+        self.is_tile_furnished(pos.get_x(), pos.get_y())
         
     def is_position_valid(self, pos):
         """

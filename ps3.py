@@ -345,13 +345,22 @@ class FurnishedRoom(RectangularRoom):
         
         returns: True if pos is in the room and is unfurnished, False otherwise.
         """
-        raise NotImplementedError
-        
+        room_width = self.width
+        room_height = self.height
+        # Check if the object is in the room:
+        if 0 <= pos.get_x() < room_width and 0 <= pos.get_y() < room_height:
+            return not self.is_position_furnished(pos)
+
+        return False
+
+
+
+
     def get_num_tiles(self):
         """
         Returns: an integer; the total number of tiles in the room that can be accessed.
         """
-        raise NotImplementedError
+        return self.get_num_tiles() - len(self.furniture_tiles)
         
     def get_random_position(self):
         """

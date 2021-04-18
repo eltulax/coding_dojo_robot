@@ -395,11 +395,22 @@ class StandardRobot(Robot):
         rotate once to a random new direction, and stay stationary) and clean the dirt on the tile
         by its given capacity. 
         """
-        raise NotImplementedError
+        # move the pos using the get_new_pos
+        # if new pos not vailed use is_positoin_in_room
+        # turn randomly (0-360)
+        # if pos ok move and clean it
+        new_pos = self.position.get_new_position(self.direction, self.speed)
+        if self.room.is_position_valid(new_pos):
+            self.position = new_pos
+            self.room.clean_tile_at_position(self.position, self.capacity)
+        else:
+            self.direction = random.randrange(360)
+
+
 
 # Uncomment this line to see your implementation of StandardRobot in action!
 #test_robot_movement(StandardRobot, EmptyRoom)
-#test_robot_movement(StandardRobot, FurnishedRoom)
+test_robot_movement(StandardRobot, FurnishedRoom)
 
 # === Problem 4
 class FaultyRobot(Robot):

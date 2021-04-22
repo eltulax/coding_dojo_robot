@@ -239,7 +239,7 @@ class Robot(object):
 
         direction: float representing an angle in degrees
         """
-        raise NotImplementedError
+        self.direction = direction
 
     def update_position_and_clean(self):
         """
@@ -269,8 +269,8 @@ class EmptyRoom(RectangularRoom):
         
         Returns: True if pos is in the room, False otherwise.
         """
-        x = pos.get_x()
-        y = pos.get_y()
+        x = math.floor(pos.get_x())
+        y = math.floor(pos.get_y())
         return (x, y) in self.tiles
             
     def get_random_position(self):
@@ -327,7 +327,9 @@ class FurnishedRoom(RectangularRoom):
         """
         Return True if tile (m, n) is furnished.
         """
-        raise NotImplementedError
+        x = math.floor(m)
+        y = math.floor(n)
+        return (x, y) in self.furniture_tiles
         
     def is_position_furnished(self, pos):
         """
@@ -335,7 +337,7 @@ class FurnishedRoom(RectangularRoom):
 
         Returns True if pos is furnished and False otherwise
         """
-        raise NotImplementedError
+        self.is_tile_furnished(pos.get_x(), pos.get_y())
         
     def is_position_valid(self, pos):
         """
@@ -343,19 +345,38 @@ class FurnishedRoom(RectangularRoom):
         
         returns: True if pos is in the room and is unfurnished, False otherwise.
         """
-        raise NotImplementedError
-        
+        room_width = self.width
+        room_height = self.height
+        # Check if the object is in the room:
+        if 0 <= pos.get_x() < room_width and 0 <= pos.get_y() < room_height:
+            return not self.is_position_furnished(pos)
+
+        return False
+
+
     def get_num_tiles(self):
         """
         Returns: an integer; the total number of tiles in the room that can be accessed.
         """
-        raise NotImplementedError
+
+        num_tiles = self.width * self.height
+        return num_tiles - len(self.furniture_tiles)
         
     def get_random_position(self):
         """
         Returns: a Position object; a valid random position (inside the room and not in a furnished area).
         """
-        raise NotImplementedError
+
+        furnished_x = [i[0] for i in self.furniture_tiles]
+        valid_x = [x for x in list(range(self.width)) if x not in furnished_x]
+
+        furnished_y = [i[1] for i in self.furniture_tiles]
+        valid_y = [y for y in list(range(self.width)) if y not in furnished_y]
+
+        x = random.choice(valid_x)
+        y = random.choice(valid_y)
+
+        return Position(x, y)
 
 # === Problem 3
 class StandardRobot(Robot):
@@ -374,11 +395,22 @@ class StandardRobot(Robot):
         rotate once to a random new direction, and stay stationary) and clean the dirt on the tile
         by its given capacity. 
         """
-        raise NotImplementedError
+        # move the pos using the get_new_pos
+        # if new pos not vailed use is_positoin_in_room
+        # turn randomly (0-360)
+        # if pos ok move and clean it
+        new_pos = self.position.get_new_position(self.direction, self.speed)
+        if self.room.is_position_valid(new_pos):
+            self.position = new_pos
+            self.room.clean_tile_at_position(self.position, self.capacity)
+        else:
+            self.direction = random.randrange(360)
+
+
 
 # Uncomment this line to see your implementation of StandardRobot in action!
 #test_robot_movement(StandardRobot, EmptyRoom)
-#test_robot_movement(StandardRobot, FurnishedRoom)
+test_robot_movement(StandardRobot, FurnishedRoom)
 
 # === Problem 4
 class FaultyRobot(Robot):

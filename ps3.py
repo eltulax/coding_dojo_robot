@@ -81,8 +81,8 @@ class RectangularRoom(object):
         height: an integer > 0
         dirt_amount: an integer >= 0
         """
-        self.width = width
-        self.height = height
+        self.width = int(width)
+        self.height = int(height)
         self.tiles = {}
         for x in range(self.width):
             for y in range(self.height):
@@ -485,8 +485,26 @@ def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_
     robot_type: class of robot to be instantiated (e.g. StandardRobot or
                 FaultyRobot)
     """
-    raise NotImplementedError
+    avgs = []
+    for _ in range(num_trials):
+        room = EmptyRoom(width, height, dirt_amount)
+        robots = [robot_type(room, speed, capacity) for _ in range(num_robots)]
+        num_tiles = room.get_num_tiles()
+        num_cleanedtiles = room.get_num_cleaned_tiles()
+        ratio = num_cleanedtiles / num_tiles
+        counter = 0
+        while ratio < min_coverage:
+            for robot in robots:
+                robot.update_position_and_clean()
 
+            num_cleanedtiles = room.get_num_cleaned_tiles()
+            ratio = num_cleanedtiles / num_tiles
+            counter += 1
+        avgs.append(counter)
+
+    sum_ = sum(avgs)
+    average = sum_ / len(avgs)
+    return average
 
 # print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 5, 5, 3, 1.0, 50, StandardRobot)))
 # print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.8, 50, StandardRobot)))
@@ -551,4 +569,4 @@ def show_plot_room_shape(title, x_label, y_label):
 
 
 #show_plot_compare_strategies('Time to clean 80% of a 20x20 room, for various numbers of robots','Number of robots','Time / steps')
-#show_plot_room_shape('Time to clean 80% of a 300-tile room for various room shapes','Aspect Ratio', 'Time / steps')
+show_plot_room_shape('Time to clean 80% of a 300-tile room for various room shapes','Aspect Ratio', 'Time / steps')

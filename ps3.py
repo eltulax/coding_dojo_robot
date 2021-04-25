@@ -337,7 +337,8 @@ class FurnishedRoom(RectangularRoom):
 
         Returns True if pos is furnished and False otherwise
         """
-        self.is_tile_furnished(pos.get_x(), pos.get_y())
+        #self.is_tile_furnished(pos.get_x(), pos.get_y())
+        return self.is_tile_furnished(pos.get_x(), pos.get_y())
         
     def is_position_valid(self, pos):
         """
@@ -402,15 +403,14 @@ class StandardRobot(Robot):
         new_pos = self.position.get_new_position(self.direction, self.speed)
         if self.room.is_position_valid(new_pos):
             self.position = new_pos
-            self.room.clean_tile_at_position(self.position, self.capacity)
+            self.room.clean_tile_at_position(self.position, self.capacity)    
         else:
             self.direction = random.randrange(360)
 
 
-
 # Uncomment this line to see your implementation of StandardRobot in action!
 #test_robot_movement(StandardRobot, EmptyRoom)
-test_robot_movement(StandardRobot, FurnishedRoom)
+#test_robot_movement(StandardRobot, FurnishedRoom)
 
 # === Problem 4
 class FaultyRobot(Robot):
